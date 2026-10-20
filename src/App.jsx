@@ -11,6 +11,8 @@ import {
 
 const roles = ['PROMOTEUR', 'DIRECTEUR', 'SECRETAIRE', 'ENSEIGNANT', 'PARENT', 'ELEVE'];
 const labels = { PROMOTEUR: 'Promoteur', DIRECTEUR: 'Directeur', SECRETAIRE: 'Secrétaire', ENSEIGNANT: 'Enseignant', PARENT: 'Parent', ELEVE: 'Élève' };
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '');
+const apiUrl = (path) => `${apiBaseUrl}${path}`;
 const cacheKey = (username, key) => `majorants.${encodeURIComponent(username)}.${key}`;
 
 function readCache(username, key) {
@@ -48,7 +50,7 @@ function App() {
 
   const api = useCallback(async (path, options = {}) => {
     if (!auth?.header) throw new Error('Veuillez vous connecter.');
-    const response = await fetch(path, {
+    const response = await fetch(apiUrl(path), {
       ...options,
       headers: { 'Content-Type': 'application/json', Authorization: auth.header, ...options.headers },
     });
@@ -137,8 +139,13 @@ function App() {
     const bytes = new TextEncoder().encode(`${login.username}:${login.password}`);
     const header = `Basic ${btoa(Array.from(bytes, (byte) => String.fromCharCode(byte)).join(''))}`;
     try {
-      const response = await fetch('/api/auth/me', { headers: { Authorization: header } });
-      if (!response.ok) throw new Error('Identifiant ou mot de passe incorrect.');
+      const response = await fetch(apiUrl('/api/auth/me'), { headers: { Authorization: header } });
+      if (response.status === 401 || response.status === 403) {
+        throw new Error('Identifiant ou mot de passe incorrect.');
+      }
+      if (!response.ok) {
+        throw new Error(`Le serveur de données a répondu avec l’erreur ${response.status}. Vérifiez son déploiement.`);
+      }
       const profile = await response.json();
       const session = { ...profile, header };
       sessionStorage.setItem('majorants.auth', JSON.stringify(session));
@@ -147,7 +154,10 @@ function App() {
       setPayments(readCache(session.username, 'payments'));
       setAuth(session);
     } catch (error) {
-      toast({ title: 'Connexion refusée', description: error.message, status: 'error' });
+      const description = error instanceof TypeError
+        ? 'Serveur de données inaccessible. Vérifiez son adresse et sa configuration CORS.'
+        : error.message;
+      toast({ title: 'Connexion refusée', description, status: 'error' });
     } finally { setBusy(false); }
   }
 

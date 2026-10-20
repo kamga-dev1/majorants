@@ -55,7 +55,13 @@ Au premier démarrage, le terminal affiche le mot de passe temporaire du compte 
 
 Le workflow GitHub Actions compile le frontend et publie automatiquement le dossier généré après chaque push sur `main`. Dans **Settings > Pages**, choisissez **GitHub Actions** comme source de déploiement.
 
-GitHub Pages héberge uniquement les fichiers statiques du frontend ; il n’exécute pas le backend Java ni MySQL. Pour utiliser la connexion et partager les données, le backend Java et MySQL doivent rester démarrés sur un serveur accessible par les appareils. Une configuration de l’adresse de l’API est nécessaire si le backend est hébergé sur un autre domaine.
+GitHub Pages héberge uniquement les fichiers statiques du frontend ; il n’exécute pas le backend Java ni MySQL. Le frontend utilise `VITE_API_BASE_URL` pour joindre le backend. Après avoir obtenu son URL HTTPS, ajoutez-la comme variable d’action du dépôt dans **Settings > Secrets and variables > Actions > Variables**, sous le nom `VITE_API_BASE_URL`, puis relancez le workflow Pages.
+
+### Essai gratuit du backend
+
+Le fichier `render.yaml` prépare le backend Java pour Render Free avec Docker. À la création du Blueprint Render, créez une base MySQL compatible (par exemple TiDB Cloud Starter), puis renseignez dans Render les variables `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME` et `DB_PASSWORD` fournies par la base. `DB_SSL_MODE=VERIFY_IDENTITY` active la vérification TLS ; ne désactivez pas TLS pour une base hébergée.
+
+Render Free met en veille le service après 15 minutes sans requête ; le premier accès suivant peut prendre environ une minute. TiDB Cloud Starter annonce un quota gratuit mensuel de 5 Gio de stockage et 50 millions d’unités de requête pour une base MySQL compatible. Si le quota est dépassé, les nouvelles connexions peuvent être suspendues jusqu’au renouvellement. Vérifiez les limites actuelles et sauvegardez les données. Ces offres gratuites conviennent aux essais, pas à la conservation de données scolaires sensibles en production.
 
 ## Rôles initiaux
 
@@ -68,4 +74,4 @@ Les données sont conservées dans le serveur MySQL, dans le schéma `majorants`
 
 ## Sécurité réseau
 
-Le serveur est destiné à un réseau Wi‑Fi privé de l’établissement. Le prototype utilise HTTP ; ne l’exposez pas sur Internet ou sur un réseau public. Les informations hors ligne sont conservées dans le stockage local du navigateur. Prévoir HTTPS, protéger les téléphones par code et mettre en place une politique de sauvegarde avant une mise en production avec des données réelles.
+En local, le serveur est destiné à un réseau Wi‑Fi privé. Pour l’essai hébergé, utilisez uniquement les URL HTTPS fournies par les hébergeurs et gardez les mots de passe dans leurs variables d’environnement privées, jamais dans GitHub ou dans le code. Les offres gratuites ne garantissent pas la disponibilité et ne sont pas adaptées à des données scolaires sensibles en production. Les informations hors ligne sont conservées dans le stockage local du navigateur ; protégez les téléphones par code et sauvegardez régulièrement la base.

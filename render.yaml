@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: majorants-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_SSL_MODE
+        value: VERIFY_IDENTITY
+      - key: APP_CORS_ALLOWED_ORIGINS
+        value: https://kamga-dev1.github.io
