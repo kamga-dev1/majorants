@@ -1,0 +1,9 @@
+{
+  "name": "Groupe Les Majorants",
+  "short_name": "Majorants",
+  "description": "Gestion scolaire hors ligne",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#102c68"
+}

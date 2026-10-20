@@ -1,0 +1,12 @@
+node_modules/
+.idea/
+.env
+.env.*
+!.env.example
+backend/target/
+backend/data/
+data/
+*.mv.db
+*.lock.db
+*.log
+/backend/src/main/resources/static/
