@@ -51,6 +51,12 @@ Ouvrir `http://localhost:8080`. Le serveur écoute sur le réseau local au port 
 
 Au premier démarrage, le terminal affiche le mot de passe temporaire du compte `promoteur`. Conservez-le et créez les autres comptes depuis l’onglet « Comptes ». Les mots de passe sont stockés sous forme hachée.
 
+## Publication de l’interface sur GitHub Pages
+
+Le workflow GitHub Actions compile le frontend et publie automatiquement le dossier généré après chaque push sur `main`. Dans **Settings > Pages**, choisissez **GitHub Actions** comme source de déploiement.
+
+GitHub Pages héberge uniquement les fichiers statiques du frontend ; il n’exécute pas le backend Java ni MySQL. Pour utiliser la connexion et partager les données, le backend Java et MySQL doivent rester démarrés sur un serveur accessible par les appareils. Une configuration de l’adresse de l’API est nécessaire si le backend est hébergé sur un autre domaine.
+
 ## Rôles initiaux
 
 - Promoteur et directeur : gestion des comptes et consultation des données.
